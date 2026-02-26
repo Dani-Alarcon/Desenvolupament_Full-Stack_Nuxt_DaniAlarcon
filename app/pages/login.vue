@@ -37,7 +37,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 watch(loggedIn, () => {
     if (loggedIn.value) {
-        navigateTo('/admin')
+        navigateTo('/pokemons')
     }
 })
 
@@ -64,5 +64,9 @@ watch(loggedIn, () => {
         <UButton type="submit" class="mt-4" @click="openInPopup('/auth/github')">
             Login with Github
         </UButton>
+
+        <UButton as-child>
+        <NuxtLink to="/register" class="ml-4" >Crear compte</NuxtLink>
+      </UButton>
     </UCard>
 </template>

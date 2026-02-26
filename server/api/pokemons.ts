@@ -15,13 +15,17 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'POST') {
     const body = await readBody(event);
-    
+
+    const name = body.name;
+    const type = body.type;
+    const generation = Number(body.generation);
+
     return await db.insert(pokemons).values({
-      name: body.name,
-      type: body.type,
-      generation: Number(body.generation),
-      imatge: body.imatge || '',
+      name,
+      type,
+      generation,
       userId: userId,
+      ...(body.imatge && body.imatge.trim() !== '' ? { imatge: body.imatge } : {})
     }).returning();
   }
 
@@ -29,7 +33,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const idToUpdate = Number(query.id);
     const body = await readBody(event);
-    
+
     await db.update(pokemons)
       .set({
         name: body.name,
@@ -41,20 +45,20 @@ export default defineEventHandler(async (event) => {
         eq(pokemons.id, idToUpdate),
         eq(pokemons.userId, userId)
       ));
-      
+
     return { message: "Pokémon modificat correctament" };
   }
 
   if (method === 'DELETE') {
     const query = getQuery(event);
     const idToDelete = Number(query.id);
-    
+
     await db.delete(pokemons)
       .where(and(
         eq(pokemons.id, idToDelete),
         eq(pokemons.userId, userId)
       ));
-      
+
     return { message: "Pokémon eliminat" };
   }
 });

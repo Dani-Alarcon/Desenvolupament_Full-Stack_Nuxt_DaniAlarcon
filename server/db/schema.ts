@@ -13,7 +13,7 @@ export const pokemons = sqliteTable('pokemons', {
   name: text('name').notNull(),
   type: text('type').notNull(),
   generation: integer('generation').notNull(),
-  imatge: text('imatge'),
+  imatge: text('imatge').default('https://upload.wikimedia.org/wikipedia/commons/5/53/Pok%C3%A9_Ball_icon.svg'),
   userId: integer('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),

@@ -1,6 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
+  devServer: {
+    host: '0.0.0.0',
+    port: 3000
+  },
   future: {
     compatibilityVersion: 4,
   },
@@ -15,4 +19,15 @@ export default defineNuxtConfig({
       },
     },
   },
+  routeRules: {
+    // Posem /** perquè apliqui a TOT: /api, /auth, etc.
+    '/**': { 
+      cors: true, 
+      headers: { 
+        'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*'
+      } 
+    },
+  }
 });

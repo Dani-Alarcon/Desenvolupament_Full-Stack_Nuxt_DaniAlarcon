@@ -20,14 +20,14 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    // Posem /** perquè apliqui a TOT: /api, /auth, etc.
-    '/**': { 
+    '/api/**': { cors: true },
+    // AFEGEIX AIXÒ PER A LES TEVES RUTES D'AUTH:
+    '/auth/**': { 
       cors: true, 
       headers: { 
         'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*'
+        'Access-Control-Allow-Origin': '*'
       } 
-    },
+    }
   }
 });

@@ -1,4 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devServer: {
@@ -12,22 +11,10 @@ export default defineNuxtConfig({
   modules: ["@nuxt/eslint", "@nuxt/ui", "nuxt-auth-utils"],
   runtimeConfig: {
     oauth: {
-      // provider in lowercase (github, google, etc.)
       github: {
         clientId: "",
         clientSecret: "",
       },
     },
-  },
-  routeRules: {
-    '/api/**': { cors: true },
-    // AFEGEIX AIXÒ PER A LES TEVES RUTES D'AUTH:
-    '/auth/**': { 
-      cors: true, 
-      headers: { 
-        'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-        'Access-Control-Allow-Origin': '*'
-      } 
-    }
   }
 });

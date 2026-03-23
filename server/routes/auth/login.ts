@@ -1,9 +1,20 @@
 import { eq } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
+  // --- INICIO BLOQUE CORS MANUAL ---
+  const origin = getRequestHeader(event, 'origin') || '*';
+  
+  setResponseHeaders(event, {
+    'Access-Control-Allow-Origin': origin === '*' ? 'http://localhost' : origin,
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Headers': 'Content-Type, Cookie, Authorization',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
+  });
+
   if (event.method === 'OPTIONS') {
     return null;
   }
+  // --- FIN BLOQUE CORS MANUAL ---
 
   if (event.method !== 'POST') {
     throw createError({

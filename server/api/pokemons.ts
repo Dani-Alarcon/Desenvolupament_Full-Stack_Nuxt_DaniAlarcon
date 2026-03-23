@@ -3,8 +3,37 @@ import { pokemons } from "../db/schema";
 import { eq, and } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
-  const { user } = await requireUserSession(event);
-  const userId = Number(user.id);
+  const origin = getRequestHeader(event, 'origin') || '*';
+  
+  setResponseHeaders(event, {
+    'Access-Control-Allow-Origin': origin === '*' ? 'http://localhost' : origin,
+    'Access-Control-Allow-Credentials': 'true',
+    // IMPORTANTE: Permitimos la nueva cabecera x-user-id
+    'Access-Control-Allow-Headers': 'Content-Type, Cookie, Authorization, x-user-id',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
+  });
+
+  if (event.method === 'OPTIONS') {
+    return null;
+  }
+
+  // --- LECTURA DEL USUARIO A PRUEBA DE MÓVILES ---
+  const headerUserId = getRequestHeader(event, 'x-user-id');
+  let userId = 0;
+
+  if (headerUserId) {
+    userId = Number(headerUserId);
+  } else {
+    // Fallback por si lo usas en web y las cookies sí funcionan
+    const session = await getUserSession(event);
+    if (session && session.user) {
+      userId = Number(session.user.id);
+    } else {
+      throw createError({ statusCode: 401, message: 'La sessió ha caducat' });
+    }
+  }
+  // -------------------------------------------------
+
   const method = event.method;
 
   if (method === 'GET') {
@@ -15,15 +44,10 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'POST') {
     const body = await readBody(event);
-
-    const name = body.name;
-    const type = body.type;
-    const generation = Number(body.generation);
-
     return await db.insert(pokemons).values({
-      name,
-      type,
-      generation,
+      name: body.name,
+      type: body.type,
+      generation: Number(body.generation),
       userId: userId,
       ...(body.imatge && body.imatge.trim() !== '' ? { imatge: body.imatge } : {})
     }).returning();
@@ -31,9 +55,7 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'PUT') {
     const query = getQuery(event);
-    const idToUpdate = Number(query.id);
     const body = await readBody(event);
-
     await db.update(pokemons)
       .set({
         name: body.name,
@@ -41,24 +63,13 @@ export default defineEventHandler(async (event) => {
         generation: Number(body.generation),
         imatge: body.imatge
       })
-      .where(and(
-        eq(pokemons.id, idToUpdate),
-        eq(pokemons.userId, userId)
-      ));
-
-    return { message: "Pokémon modificat correctament" };
+      .where(and(eq(pokemons.id, Number(query.id)), eq(pokemons.userId, userId)));
+    return { message: "Pokémon modificat" };
   }
 
   if (method === 'DELETE') {
     const query = getQuery(event);
-    const idToDelete = Number(query.id);
-
-    await db.delete(pokemons)
-      .where(and(
-        eq(pokemons.id, idToDelete),
-        eq(pokemons.userId, userId)
-      ));
-
+    await db.delete(pokemons).where(and(eq(pokemons.id, Number(query.id)), eq(pokemons.userId, userId)));
     return { message: "Pokémon eliminat" };
   }
 });

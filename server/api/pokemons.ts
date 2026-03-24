@@ -7,8 +7,7 @@ export default defineEventHandler(async (event) => {
   
   setResponseHeaders(event, {
     'Access-Control-Allow-Origin': origin === '*' ? 'http://localhost' : origin,
-    'Access-Control-Allow-Credentials': 'true',
-    // IMPORTANTE: Permitimos la nueva cabecera x-user-id
+    'Access-Control-Allow-Credentials': 'true',    
     'Access-Control-Allow-Headers': 'Content-Type, Cookie, Authorization, x-user-id',
     'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
   });
@@ -17,14 +16,12 @@ export default defineEventHandler(async (event) => {
     return null;
   }
 
-  // --- LECTURA DEL USUARIO A PRUEBA DE MÓVILES ---
   const headerUserId = getRequestHeader(event, 'x-user-id');
   let userId = 0;
 
   if (headerUserId) {
     userId = Number(headerUserId);
   } else {
-    // Fallback por si lo usas en web y las cookies sí funcionan
     const session = await getUserSession(event);
     if (session && session.user) {
       userId = Number(session.user.id);
@@ -32,7 +29,6 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 401, message: 'La sessió ha caducat' });
     }
   }
-  // -------------------------------------------------
 
   const method = event.method;
 

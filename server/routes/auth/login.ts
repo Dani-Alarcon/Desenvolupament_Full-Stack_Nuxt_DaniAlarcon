@@ -1,7 +1,6 @@
 import { eq } from "drizzle-orm";
 
-export default defineEventHandler(async (event) => {
-  // --- INICIO BLOQUE CORS MANUAL ---
+export default defineEventHandler(async (event) => {  
   const origin = getRequestHeader(event, 'origin') || '*';
   
   setResponseHeaders(event, {
@@ -13,8 +12,7 @@ export default defineEventHandler(async (event) => {
 
   if (event.method === 'OPTIONS') {
     return null;
-  }
-  // --- FIN BLOQUE CORS MANUAL ---
+  }  
 
   if (event.method !== 'POST') {
     throw createError({

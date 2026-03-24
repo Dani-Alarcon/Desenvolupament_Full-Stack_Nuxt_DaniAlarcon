@@ -1,9 +1,10 @@
 import { eq } from "drizzle-orm"
+import * as schema from "../db/schema"
 export async function throwIfUserExist(email: string) {
     const existingUser = await useDb().query.users.findFirst({
         where: eq(schema.users.email, email)
     })
-    if(existingUser){
+    if (existingUser) {
         throw createError({
             statusCode: 400,
             statusMessage: "L'usuari ja exixteix!"
@@ -18,7 +19,7 @@ export async function registerUser(name: string, email: string, password: string
         login: email
     }).returning()
     const newUser = res.at(0)
-    if(!newUser){
+    if (!newUser) {
         throw createError({
             statusCode: 500,
             statusMessage: "Error, se ha roto"

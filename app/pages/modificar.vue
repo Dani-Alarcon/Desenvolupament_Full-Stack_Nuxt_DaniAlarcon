@@ -142,7 +142,6 @@ async function onSubmit(event) {
     width: 100%;
     height: 6px;
     background: linear-gradient(90deg, #f59e0b, #ef4444);
-    /* Color més taronja/vermell per diferenciar-lo de Crear */
 }
 
 .form-title {

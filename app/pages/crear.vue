@@ -7,7 +7,6 @@ definePageMeta({
 
 const toast = useToast();
 
-// Esquema de validació amb Zod
 const schema = z.object({
   name: z.string().min(2, "El nom ha de tenir almenys 2 caràcters"),
   type: z.string().min(3, "Indica un tipus (Ex: Elèctric, Foc...)"),
@@ -24,11 +23,7 @@ const state = reactive({
 
 async function onSubmit(event) {
   try {
-    // Fem una còpia de les dades del formulari
     const payload = { ...event.data };
-
-    // SI LA IMATGE ESTÀ BUIDA: L'eliminem de l'objecte.
-    // D'aquesta manera, Drizzle/SQLite aplicarà el .default() del teu schema.ts
     if (!payload.imatge || payload.imatge.trim() === "") {
       delete payload.imatge;
     }
@@ -44,7 +39,6 @@ async function onSubmit(event) {
       color: 'green' 
     });
 
-    // Naveguem a la llista (ajusta la ruta si és / o /pokemons)
     navigateTo('/pokemons'); 
 
   } catch (error) {
@@ -195,7 +189,7 @@ async function onSubmit(event) {
   height: 110px;
   margin: 0 auto;
   background: white;
-  border-radius: 50%; /* Ara és circular com a la llista principal */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
